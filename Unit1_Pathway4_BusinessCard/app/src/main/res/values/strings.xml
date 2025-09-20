@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BusinessCard</string>
+    <string name="full_name">Nguyễn Văn A</string>
+    <string name="job_desc">Software Engineer</string>
+    <string name="gmail">✉️ email@example.com</string>
+    <string name="github">💻 github.com/username</string>
+    <string name="SDT">📱 0123-456-789</string>
+</resources>

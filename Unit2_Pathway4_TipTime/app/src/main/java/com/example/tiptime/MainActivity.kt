@@ -15,6 +15,7 @@
  */
 package com.example.tiptime
 
+import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -51,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
 import androidx.compose.material3.Slider
+import androidx.annotation.StringRes
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,17 +75,19 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TipTimeLayout() {
     var amountInput by remember { mutableStateOf("") }
-    var tipPercent by remember { mutableStateOf(15.0f) }
+    var tipInput by remember { mutableStateOf("") }
+    //var tipPercent by remember { mutableStateOf(15.0f) }
+
     var roundUp by remember { mutableStateOf(false) }
 
     val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
     val tip = calculateTip(amount, tipPercent, roundUp)
 
     Column(
         modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .safeDrawingPadding(),
+            .padding(40.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -92,17 +98,33 @@ fun TipTimeLayout() {
                 .align(alignment = Alignment.Start)
         )
         EditNumberField(
+            label = R.string.bill_amount,
+            KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             value = amountInput,
             onValueChange = { amountInput = it },
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
-        TipPercentSlider(
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            value =tipInput,
+            onValueChange = {tipInput = it  },
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+        /* TipPercentSlider(
             tipPercent = tipPercent,
             onValueChange = { tipPercent = it },
             modifier = Modifier.padding(bottom = 16.dp)
         )
+        */
         RoundTheTipRow(
             roundUp = roundUp,
             onRoundUpChanged = { roundUp = it },
@@ -118,6 +140,8 @@ fun TipTimeLayout() {
 
 @Composable
 fun EditNumberField(
+    @StringRes label : Int,
+    keyboardOptions: KeyboardOptions,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -126,15 +150,13 @@ fun EditNumberField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
-        label = { Text(stringResource(R.string.bill_amount)) },
+        label = { Text(stringResource(label)) },
         singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Next
-        )
+        keyboardOptions = keyboardOptions
     )
 }
 
+/*
 @Composable
 fun TipPercentSlider(
     tipPercent: Float,
@@ -155,6 +177,7 @@ fun TipPercentSlider(
         )
     }
 }
+ */
 
 @Composable
 fun RoundTheTipRow(
@@ -180,7 +203,7 @@ fun RoundTheTipRow(
 }
 
 
-private fun calculateTip(amount: Double, tipPercent: Float, roundUp: Boolean): String {
+private fun calculateTip(amount: Double, tipPercent: Double, roundUp: Boolean): String {
     var tip = tipPercent / 100 * amount
     if (roundUp) {
         tip = kotlin.math.ceil(tip)

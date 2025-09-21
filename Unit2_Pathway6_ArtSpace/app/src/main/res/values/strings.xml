@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Art Space</string>
+
+    <!-- Artworks -->
+    <string name="title_one">The Starry Night</string>
+    <string name="artist_one">Vincent van Gogh</string>
+    <string name="title_two">The Starry Night Over the Rhone</string>
+    <string name="artist_two">Vincent van Gogh</string>
+    <string name="title_three">The Potato Eaters</string>
+    <string name="artist_three">Vincent van Gogh</string>
+
+    <!-- Buttons -->
+    <string name="previous_button">Previous</string>
+    <string name="next_button">Next</string>
+    <string name="share_button">Share</string>
+
+    <string name="share_subject">Check out this artwork!</string>
+    <string name="share_message">I just found this artwork on my new Android app:\nTitle: %1$s\nArtist: %2$s</string>
+</resources>

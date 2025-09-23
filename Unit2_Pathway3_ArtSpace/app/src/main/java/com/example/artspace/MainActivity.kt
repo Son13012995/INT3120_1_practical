@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.artspace
 
 import android.content.Intent
@@ -23,36 +8,25 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.artspace.ui.theme.ArtSpaceTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,11 +34,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ArtSpaceTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = "splash"
                 ) {
-                    ArtSpaceApp()
+                    composable("splash") { SplashScreen(navController) }
+                    composable("art") { ArtSpaceApp() }
                 }
             }
         }
@@ -72,24 +48,42 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun SplashScreen(navController: NavHostController) {
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(3000)
+        navController.navigate("art") {
+            popUpTo("splash") { inclusive = true } // Xóa splash khỏi back stack
+        }
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.primary
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Chào mừng đến với Art Space!",
+                fontSize = 50.sp,
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.displayLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
 fun ArtSpaceApp() {
-    val context = LocalContext.current // Thêm dòng này
+    val context = LocalContext.current
     val artworks = listOf(
-        Artwork(
-            R.drawable.artwork_1,
-            R.string.title_one,
-            R.string.artist_one
-        ),
-        Artwork(
-            R.drawable.artwork_2,
-            R.string.title_two,
-            R.string.artist_two
-        ),
-        Artwork(
-            R.drawable.artwork_3,
-            R.string.title_three,
-            R.string.artist_three
-        )
+        Artwork(R.drawable.artwork_1, R.string.title_one, R.string.artist_one),
+        Artwork(R.drawable.artwork_2, R.string.title_two, R.string.artist_two),
+        Artwork(R.drawable.artwork_3, R.string.title_three, R.string.artist_three)
     )
 
     var currentArtworkIndex by remember { mutableStateOf(0) }
@@ -127,7 +121,7 @@ fun ArtSpaceApp() {
                 }
             },
             onShareClick = {
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                val shareIntent = Intent(Intent.ACTION_SEND).apply { // Vẫn dùng implicit intents khi tương tác với APP ngoài
                     type = "text/plain"
                     putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.share_subject))
                     putExtra(
@@ -144,6 +138,29 @@ fun ArtSpaceApp() {
         )
     }
 }
+/*
+
+ ------------------------------------------------------------
+   - Explicit Intent
+   ------------------------------------------------------------
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+        setContent {
+            ArtSpaceTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    ArtSpaceApp() // chạy trực tiếp, không có NavHost
+                }
+            }
+        }
+    }
+}
+*/
 
 @Composable
 fun ArtworkDisplay(

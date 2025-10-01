@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Code Defenders</string>
+
+    <string name="hero1">Syntax Sentry</string>
+    <string name="description1">Master of the semicolon, he guards against rogue syntax errors.</string>
+
+    <string name="hero2">The Debugger Wisp</string>
+    <string name="description2">She shines a light on hidden null pointers in the deepest code.</string>
+
+    <string name="hero3">Compile Commander</string>
+    <string name="description3">Ensures all dependencies are resolved and builds are clean.</string>
+
+    <string name="hero4">Architect Ari</string>
+    <string name="description4">Designs stable, scalable systems using clean architecture.</string>
+
+    <string name="hero5">Quantum Querier</string>
+    <string name="description5">Processes and retrieves complex data from any digital dimension instantly.</string>
+
+    <string name="hero6">Git Guardian</string>
+    <string name="description6">Protects the timeline of the project, undoing accidental commits.</string>
+</resources>

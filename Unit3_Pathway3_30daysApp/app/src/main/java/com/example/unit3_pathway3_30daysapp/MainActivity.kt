@@ -15,41 +15,55 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 
 import androidx.compose.ui.platform.LocalContext
+import com.example.unit3_pathway3_30daysapp.model.MusicRepository
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             Unit3_Pathway3_30daysAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val context = LocalContext.current
+                val context = LocalContext.current
+                val playlist = MusicRepository.playlist
 
+                // Trạng thái chỉ mục bài hát hiện tại
+                var currentSongIndex by remember { mutableStateOf(0) }
 
-                    val mediaPlayer = remember {
-                        // Tạo MediaPlayer với tệp nhạc "music" trong res/raw/
-                        MediaPlayer.create(context, R.raw.music)
+                // MediaPlayer được quản lý bên trong remember.
+                // Khi currentSongIndex thay đổi, MediaPlayer sẽ được khởi tạo lại.
+                val mediaPlayer by remember(currentSongIndex) {
+                    val songId = playlist[currentSongIndex].musicRes
+                    val player = MediaPlayer.create(context, songId)
+
+                    // Thêm listener tự động chuyển bài
+                    player.setOnCompletionListener {
+                        currentSongIndex = (currentSongIndex + 1) % playlist.size
                     }
 
-                    // 2. Giải phóng MediaPlayer khi Composable bị hủy
-                    DisposableEffect(mediaPlayer) {
-                        onDispose {
-                            // Dọn dẹp tài nguyên khi Activity bị hủy
-                            if (mediaPlayer.isPlaying) {
-                                mediaPlayer.stop()
-                            }
-                            mediaPlayer.release()
-                        }
-                    }
-
-                    MusicPlayerScreen(mediaPlayer = mediaPlayer)
+                    mutableStateOf(player)
                 }
+
+                DisposableEffect(mediaPlayer) {
+                    onDispose {
+                        mediaPlayer.stop()
+                        mediaPlayer.release()
+                    }
+                }
+
+                FullPlayerScreen(
+                    mediaPlayer = mediaPlayer,
+                    playlist = playlist,
+                    currentSongIndex = currentSongIndex,
+                    onNext = {
+                        // Chuyển sang bài tiếp theo (Vòng lặp)
+                        currentSongIndex = (currentSongIndex + 1) % playlist.size
+                    },
+                    onPrevious = {
+                        // Chuyển về bài trước (Vòng lặp)
+                        currentSongIndex = (currentSongIndex - 1 + playlist.size) % playlist.size
+                    }
+                )
             }
         }
     }
 }
-

@@ -172,7 +172,6 @@ private fun DogItemButton(
             imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
             contentDescription = stringResource(R.string.expand_button_content_description),
             tint = MaterialTheme.colorScheme.secondary
-
         )
 
     }

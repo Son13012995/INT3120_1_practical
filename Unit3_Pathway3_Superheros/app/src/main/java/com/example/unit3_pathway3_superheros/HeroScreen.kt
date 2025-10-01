@@ -46,7 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
-import com.example.unit3_pathway3_superheros.R
 import com.example.unit3_pathway3_superheros.model.Hero
 import com.example.unit3_pathway3_superheros.model.HeroesRepository
 import com.example.unit3_pathway3_superheros.ui.theme.SuperheroesTheme

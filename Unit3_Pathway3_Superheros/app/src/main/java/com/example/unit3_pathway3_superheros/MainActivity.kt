@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
-import com.example.unit3_pathway3_superheros
 import com.example.unit3_pathway3_superheros.ui.theme.SuperheroesTheme
 
 class MainActivity : ComponentActivity() {

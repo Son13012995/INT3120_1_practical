@@ -121,8 +121,9 @@ fun DogItem(
                     animationSpec = spring(
                         dampingRatio = Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessMedium
-                )
-        ) {
+                    )
+                ) // <--- ĐÓNG NGOẶC CỦA MODIFIER TẠI ĐÂY!
+        ) { // <--- MỞ NGOẶC NHỌN CHO NỘI DUNG (content) CỦA Column
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,10 +147,8 @@ fun DogItem(
                     )
                 )
             }
-
         }
-        )
-    }
+    } 
 }
 
 @Composable

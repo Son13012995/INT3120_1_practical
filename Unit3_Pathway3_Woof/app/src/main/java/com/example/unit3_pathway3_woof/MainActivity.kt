@@ -61,6 +61,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 
 
 class MainActivity : ComponentActivity() {
@@ -112,6 +114,10 @@ fun DogItem(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val color by animateColorAsState(
+        targetValue = if (expanded) MaterialTheme.colorScheme.tertiaryContainer
+        else MaterialTheme.colorScheme.primaryContainer,
+    )
     Card(
         modifier = modifier
     ) {
@@ -122,8 +128,9 @@ fun DogItem(
                         dampingRatio = Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessMedium
                     )
-                ) // <--- ĐÓNG NGOẶC CỦA MODIFIER TẠI ĐÂY!
-        ) { // <--- MỞ NGOẶC NHỌN CHO NỘI DUNG (content) CỦA Column
+                )
+                .background(color = color)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,7 +155,7 @@ fun DogItem(
                 )
             }
         }
-    } 
+    }
 }
 
 @Composable

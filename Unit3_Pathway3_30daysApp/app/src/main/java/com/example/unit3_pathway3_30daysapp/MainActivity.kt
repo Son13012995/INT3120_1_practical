@@ -5,13 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.unit3_pathway3_30daysapp.ui.theme.Unit3_Pathway3_30daysAppTheme
+
+import android.media.MediaPlayer
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
+
+import androidx.compose.ui.platform.LocalContext
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +23,33 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Unit3_Pathway3_30daysAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val context = LocalContext.current
+
+
+                    val mediaPlayer = remember {
+                        // Tạo MediaPlayer với tệp nhạc "music" trong res/raw/
+                        MediaPlayer.create(context, R.raw.music)
+                    }
+
+                    // 2. Giải phóng MediaPlayer khi Composable bị hủy
+                    DisposableEffect(mediaPlayer) {
+                        onDispose {
+                            // Dọn dẹp tài nguyên khi Activity bị hủy
+                            if (mediaPlayer.isPlaying) {
+                                mediaPlayer.stop()
+                            }
+                            mediaPlayer.release()
+                        }
+                    }
+
+                    MusicPlayerScreen(mediaPlayer = mediaPlayer)
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Unit3_Pathway3_30daysAppTheme {
-        Greeting("Android")
-    }
-}

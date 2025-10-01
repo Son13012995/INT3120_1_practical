@@ -56,4 +56,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // 1. Thư viện Coroutines (Cần cho LaunchedEffect, delay)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    // 2. Material Icons Extended (Nếu cần thêm biểu tượng)
+    implementation("androidx.compose.material:material-icons-extended")
 }

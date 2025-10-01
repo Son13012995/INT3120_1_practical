@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.woof.data
+package com.example.unit3_pathway3_woof.data
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.example.woof.R
+import com.example.unit3_pathway3_woof .R
 
 /**
  * A data class to represent the information presented in the dog card

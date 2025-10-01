@@ -1,4 +1,4 @@
-package com.example.woof.ui.theme
+package com.example.unit3_pathway3_woof.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

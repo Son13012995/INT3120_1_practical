@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.example.woof
+package com.example.unit3_pathway3_woof
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.R
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -46,9 +45,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.woof.data.Dog
-import com.example.woof.data.dogs
-import com.example.woof.ui.theme.WoofTheme
+import com.example.unit3_pathway3_woof.data.Dog
+import com.example.unit3_pathway3_woof.data.dogs
+import com.example.unit3_pathway3_woof.ui.theme.WoofTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,6 +117,7 @@ fun DogItem(
  *
  * @param modifier modifiers to set to this composable
  */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun WoofTopAppBar(modifier: Modifier = Modifier) {
     CenterAlignedTopAppBar(

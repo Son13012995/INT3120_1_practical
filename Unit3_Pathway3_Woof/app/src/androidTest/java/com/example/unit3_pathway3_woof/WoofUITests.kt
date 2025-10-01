@@ -18,7 +18,7 @@ class WoofUITests {
 
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     /**
      * Kiểm tra xem TopAppBar có hiển thị tiêu đề ứng dụng (từ R.string.app_name) hay không.

@@ -3,7 +3,6 @@ package com.example.unit3_pathway3_superheros
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring.DampingRatioLowBouncy
 import androidx.compose.animation.core.Spring.StiffnessVeryLow
@@ -12,59 +11,168 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight // Mới
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height // Mới
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.width // Mới
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items // Mới
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider // Mới
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton // Mới
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue // Mới
+import androidx.compose.runtime.mutableStateOf // Mới
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue // Mới
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration // Mới
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-
 import com.example.unit3_pathway3_superheros.model.Hero
 import com.example.unit3_pathway3_superheros.model.HeroesRepository
 import com.example.unit3_pathway3_superheros.ui.theme.SuperheroesTheme
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuperheroesApp(modifier: Modifier = Modifier) {
+    // Trạng thái để kiểm soát việc chia team
+    var showTeams by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = {
-            SuperheroesTopAppBar()
+        topBar = { SuperheroesTopAppBar() },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { showTeams = !showTeams },
+                icon = { Icon(Icons.Filled.Group, contentDescription = null) },
+                text = { Text(if (showTeams) "Hiển thị tất cả" else "Chia 2 Team") }
+            )
         }
     ) { paddingValues ->
-        val heroes = HeroesRepository.heroes
-        HeroesList(heroes = heroes, contentPadding = paddingValues)
+        if (showTeams) {
+            TeamLayout(
+                teamA = HeroesRepository.teamA,
+                teamB = HeroesRepository.teamB,
+                contentPadding = paddingValues
+            )
+        } else {
+            HeroesList(heroes = HeroesRepository.heroes, contentPadding = paddingValues)
+        }
     }
 }
+
+@Composable
+fun TeamLayout(
+    teamA: List<Hero>,
+    teamB: List<Hero>,
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier
+) {
+    // Lấy hướng màn hình hiện tại
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    // Tính tổng sức mạnh
+    val totalPowerA = HeroesRepository.teamAPower
+    val totalPowerB = HeroesRepository.teamBPower
+
+    Surface(modifier = modifier.padding(contentPadding).fillMaxSize()) {
+        if (isLandscape) {
+            Row(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TeamColumn(
+                    name = "Terrorist (Sức mạnh: $totalPowerA)",
+                    heroes = teamA,
+                    modifier = Modifier.weight(1f)
+                )
+                Divider(Modifier.width(1.dp).fillMaxHeight())
+                TeamColumn(
+                    name = "Counter-Terrorist (Sức mạnh: $totalPowerB)",
+                    heroes = teamB,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TeamColumn(
+                    name = "Terrorist (Sức mạnh: $totalPowerA)",
+                    heroes = teamA,
+                    modifier = Modifier.weight(1f)
+                )
+                Divider(Modifier.height(1.dp).fillMaxWidth())
+                TeamColumn(
+                    name = "Counter-Terrorist (Sức mạnh: $totalPowerB)",
+                    heroes = teamB,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TeamColumn(
+    name: String,
+    heroes: List<Hero>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = name,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(heroes) { hero ->
+                HeroListItem(
+                    hero = hero,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
 
 // TopBar - from MainAct
 @OptIn(ExperimentalMaterial3Api::class)
@@ -147,6 +255,12 @@ fun HeroListItem(
                     text = stringResource(hero.descriptionRes),
                     style = MaterialTheme.typography.bodyLarge
                 )
+                // HIỂN THỊ CHỈ SỐ SỨC MẠNH MỚI
+                Text(
+                    text = "Sức mạnh: ${hero.powerLevel}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
             Spacer(Modifier.width(16.dp))
             Box(
@@ -174,7 +288,8 @@ fun HeroPreview() {
     val hero = Hero(
         R.string.hero1,
         R.string.description1,
-        R.drawable.android_superhero1
+        R.drawable.android_superhero1,
+        powerLevel = 95
     )
     SuperheroesTheme {
         HeroListItem(hero = hero)
@@ -188,7 +303,7 @@ fun HeroesPreview() {
         Surface (
             color = MaterialTheme.colorScheme.background
         ) {
-            HeroesList(heroes = HeroesRepository.heroes)
+            SuperheroesApp()
         }
     }
 }

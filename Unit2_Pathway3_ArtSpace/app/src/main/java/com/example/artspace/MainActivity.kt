@@ -1,7 +1,12 @@
 package com.example.artspace
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,11 +26,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.artspace.ui.theme.ArtSpaceTheme
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 class MainActivity : ComponentActivity() {
@@ -120,9 +129,9 @@ fun ArtSpaceApp() {
                     0
                 }
             },
-            onShareClick = {
+            /*onShareClick = { //share text
                 val shareIntent = Intent(Intent.ACTION_SEND).apply { // Vẫn dùng implicit intents khi tương tác với APP ngoài
-                    type = "text/plain"
+                    type = "text/plain" // loai du lieu: van ban thuan
                     putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.share_subject))
                     putExtra(
                         Intent.EXTRA_TEXT,
@@ -134,9 +143,89 @@ fun ArtSpaceApp() {
                     )
                 }
                 context.startActivity(Intent.createChooser(shareIntent, null))
-            }
+            }*/
+                    onShareClick = { //share
+                        // 1. Lấy URI của hình ảnh từ tài nguyên drawable
+                        val imageUri: Uri? = getUriFromDrawable(context, currentArtwork.drawableRes)
+
+                        if (imageUri != null) {
+                            // 2. Tạo một Implicit Intent với hành động ACTION_SEND
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                // 3. Đặt loại dữ liệu là "image/*" để tương thích với các ứng dụng chia sẻ ảnh
+                                type = "image/*"
+                                // 4. Thêm URI của hình ảnh vào Extras bằng hằng số Intent.EXTRA_STREAM
+                                putExtra(Intent.EXTRA_STREAM, imageUri)
+                                // 5. Cấp quyền đọc tạm thời cho ứng dụng nhận dữ liệu
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+
+                            // 6. Khởi chạy hộp thoại lựa chọn để người dùng chọn ứng dụng
+                            context.startActivity(Intent.createChooser(shareIntent, null))
+                        }
+                    }
         )
+
+    // THÊM NÚT MỞ URL TẠI ĐÂY
+    Spacer(Modifier.height(20.dp))
+    Button(
+        onClick = {
+            // Gọi hàm mở URL khi nút được nhấn
+            openUrlInBrowser(context, "https://www.facebook.com/tranhoangson1401")
+        },
+        // Thiết lập kích thước nút nếu cần
+        modifier = Modifier.fillMaxWidth(0.6f).align(Alignment.CenterHorizontally)
+
+    ) {
+        Text("Visit My Facebook")
     }
+        }
+
+}
+
+
+private fun getUriFromDrawable(context: Context, @DrawableRes drawableRes: Int): Uri? {
+    // Lấy bitmap từ drawable
+    val drawable = context.resources.getDrawable(drawableRes, null)
+    val bitmap = (drawable as BitmapDrawable).bitmap
+
+    // Lưu bitmap vào một tệp tạm thời
+    val filesDir = context.cacheDir
+    val imageFile = File(filesDir, "share_image.jpeg")
+
+    try {
+        val outputStream = FileOutputStream(imageFile)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+        outputStream.flush()
+        outputStream.close()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        return null
+    }
+
+    // Sử dụng FileProvider để tạo URI an toàn
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider", // Tên authority đã khai báo
+        imageFile
+    )
+}
+
+fun openUrlInBrowser(context: Context, url: String) {
+    val webpage: Uri = Uri.parse(url)
+    val intent = Intent(Intent.ACTION_VIEW, webpage).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK  }
+    try {
+        // Thử khởi động trình duyệt
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        // Bắt và xử lý lỗi nếu không tìm thấy ứng dụng (trình duyệt)
+        Toast.makeText(
+            context,
+            "Không thể mở liên kết. Vui lòng kiểm tra ứng dụng trình duyệt.",
+            Toast.LENGTH_LONG
+        ).show()
+        e.printStackTrace()
+    }
+
 }
 /*
 

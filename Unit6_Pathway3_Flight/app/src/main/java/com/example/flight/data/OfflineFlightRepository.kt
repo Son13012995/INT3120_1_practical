@@ -1,8 +1,12 @@
+// File: OfflineFlightRepository.kt (Cải tiến)
+
 package com.example.flight.data
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map // Thêm import mới
 
 class OfflineFlightRepository(private val flightDao: FlightDao) : FlightRepository {
+    // --- AirportRepository Implementation ---
     override fun getAirportsByQuery(query: String): Flow<List<Airport>> =
         flightDao.getAirportsByQuery(query)
 
@@ -12,8 +16,10 @@ class OfflineFlightRepository(private val flightDao: FlightDao) : FlightReposito
     override fun getAllPossibleDestinations(iataCode: String): Flow<List<Airport>> =
         flightDao.getAllPossibleDestinations(iataCode)
 
-    override fun getAllFavorites(): Flow<List<Favorite>> =
-        flightDao.getAllFavorites()
+    // --- FavoriteRepository Implementation ---
+    override fun getAllFavorite(): Flow<List<Favorite>> =
+
+        flightDao.getAllFavorite()
 
     override suspend fun insertFavorite(favorite: Favorite) =
         flightDao.insertFavorite(favorite)

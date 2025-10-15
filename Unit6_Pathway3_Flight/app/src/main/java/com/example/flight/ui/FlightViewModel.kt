@@ -48,7 +48,7 @@ class FlightViewModel(
 
         // 2️⃣ Lấy danh sách favorite từ database
         viewModelScope.launch {
-            flightRepository.getAllFavorites().collectLatest { favorites ->
+            flightRepository.getAllFavorite().collectLatest { favorites ->
                 _uiState.value = _uiState.value.copy(favoriteList = favorites)
             }
         }

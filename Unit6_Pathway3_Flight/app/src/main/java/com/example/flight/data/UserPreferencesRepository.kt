@@ -2,6 +2,7 @@ package com.example.flight.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -14,18 +15,18 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = "flight_search_preferences"
 )
 
-class UserPreferencesRepository(private val context: Context) {
+class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     private object Keys {
         val SEARCH_QUERY = stringPreferencesKey("search_query")
     }
 
-    val searchQuery: Flow<String> = context.dataStore.data
+    val searchQuery: Flow<String> = dataStore.data
         .map { preferences ->
             preferences[Keys.SEARCH_QUERY] ?: ""
         }
 
     suspend fun saveSearchQuery(query: String) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[Keys.SEARCH_QUERY] = query
         }
     }

@@ -6,9 +6,10 @@ import com.example.amphibians.data.DefaultAppContainer
 
 class AmphibianApplication : Application() {
     /** AppContainer instance được dùng bởi toàn bộ app */
-    lateinit var container: AppContainer
+    val container: AppContainer by lazy {
+        DefaultAppContainer()
+    }
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer()
     }
 }

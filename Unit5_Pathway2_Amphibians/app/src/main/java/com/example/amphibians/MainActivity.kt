@@ -1,5 +1,3 @@
-// MainActivity.kt
-
 package com.example.amphibians
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,6 +10,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults // Thêm import mới
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,7 +20,19 @@ import com.example.amphibians.ui.theme.screens.AmphibiansViewModel
 import com.example.amphibians.ui.theme.screens.HomeScreen
 
 class MainActivity : ComponentActivity() {
+
+
+    @Composable
     @OptIn(ExperimentalMaterial3Api::class)
+    fun AmphibiansTopAppBar(modifier: Modifier = Modifier) {
+        TopAppBar(
+            title = {
+                Text(stringResource(R.string.app_name))
+            },
+            modifier = modifier
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,11 +44,7 @@ class MainActivity : ComponentActivity() {
                     val amphibiansViewModel: AmphibiansViewModel =
                         viewModel(factory = AmphibiansViewModel.Factory)
                     Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = { Text(stringResource(R.string.app_name)) }
-                            )
-                        }
+                        topBar = { AmphibiansTopAppBar() }
                     ) { innerPadding ->
                         HomeScreen(
                             amphibianUiState = amphibiansViewModel.amphibianUiState,

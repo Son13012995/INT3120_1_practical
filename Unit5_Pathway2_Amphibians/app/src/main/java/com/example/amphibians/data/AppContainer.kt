@@ -1,5 +1,3 @@
-//Tạo một "Container" để quản lý và cung cấp các dependency
-// (như Retrofit, Repository) cho toàn bộ ứng dụng.
 package com.example.amphibians.data
 import com.example.amphibians.network.AmphibianApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -13,29 +11,33 @@ import retrofit2.Retrofit
 interface AppContainer {
     val amphibianRepository: AmphibianRepository
 }
+// Custom JSON Decoder
+private val customJson = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+}
 
-//Lớp triển khai container, tạo và quản lý các dependency.
+
 class DefaultAppContainer : AppContainer {
 
     private val baseUrl = "https://android-kotlin-fun-mars-server.appspot.com/"
 
-     //Dùng Retrofit builder để tạo đối tượng Retrofit.
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+    private val apiClient: Retrofit = Retrofit.Builder()
+        // Dùng customJson đã định nghĩa
+        .addConverterFactory(customJson.asConverterFactory("application/json".toMediaType()))
         .baseUrl(baseUrl)
+        .validateEagerly(true)
         .build()
 
     /**
      * Đối tượng Retrofit service được tạo bởi Retrofit.
-     * Dùng lazy để chỉ được khởi tạo khi được gọi lần đầu.
+     * hàm lambda.
      */
     private val retrofitService: AmphibianApiService by lazy {
-        retrofit.create(AmphibianApiService::class.java)
+        { apiClient.create(AmphibianApiService::class.java) }.invoke()
     }
-
-
-    //Cung cấp repository cho toàn ứng dụng.
+    
     override val amphibianRepository: AmphibianRepository by lazy {
-        NetworkAmphibianRepository(retrofitService)
+        NetworkAmphibianRepository(amphibianApiService = retrofitService)
     }
 }

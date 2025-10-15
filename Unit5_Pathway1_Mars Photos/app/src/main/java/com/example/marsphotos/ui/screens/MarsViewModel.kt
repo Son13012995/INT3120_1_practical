@@ -1,6 +1,6 @@
 package com.example.marsphotos.ui.screens
 
-import MarsPhotosRepository
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,11 +11,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.marsphotos.MarsPhotosApplication
+import com.example.marsphotos.data.MarsPhotosRepository
 import com.example.marsphotos.network.MarsPhoto
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-// Trạng thái UI (giữ nguyên)
+
 sealed interface MarsUiState {
     data class Success(val photos: List<MarsPhoto>) : MarsUiState
     object Error : MarsUiState

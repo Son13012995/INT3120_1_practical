@@ -6,11 +6,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScheduleDao {
-    // Lấy tất cả các lịch trình, sắp xếp theo thời gian đến
-    @Query("SELECT * FROM schedule ORDER BY arrival_time ASC")
+
+    @Query("SELECT * FROM schedule ORDER BY arrival_time ")
     fun getAll(): Flow<List<Schedule>>
 
-    // Lấy lịch trình cho một trạm cụ thể, sắp xếp theo thời gian đến
-    @Query("SELECT * FROM schedule WHERE stop_name = :stopName ORDER BY arrival_time ASC")
+
+    @Query("SELECT * FROM schedule WHERE stop_name IN (:stopName) ORDER BY arrival_time")
     fun getByStopName(stopName: String): Flow<List<Schedule>>
+
+    @Query("SELECT DISTINCT stop_name FROM schedule")
+    fun getAllStopNames(): Flow<List<String>>
 }

@@ -18,7 +18,7 @@ abstract class AppDatabase: RoomDatabase() {
                 Room.databaseBuilder(
                     context,
                     AppDatabase::class.java,
-                    "app_database"
+                    "bus_database"
                 )
                     // Nạp dữ liệu từ file có sẵn trong assets
                     .createFromAsset("database/bus_schedule.db")
@@ -27,6 +27,10 @@ abstract class AppDatabase: RoomDatabase() {
                         INSTANCE = it
                     }
             }
+        }
+
+        fun init(context: Context): AppDatabase {
+            return INSTANCE ?: getDatabase(context)
         }
     }
 }

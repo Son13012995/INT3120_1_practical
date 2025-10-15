@@ -36,7 +36,8 @@ class SpinnerAdapter(val onColorChange: (Int) -> Unit) : AdapterView.OnItemSelec
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        onColorChange(0)
+//        onColorChange(0)
+        onColorChange(initialColorPosition)
     }
 }
 
@@ -68,7 +69,7 @@ fun ColorSpinnerRow(
             },
             update = { spinner ->
                 spinner.setSelection(colorSpinnerPosition)
-                spinner.onItemSelectedListener = SpinnerAdapter(onColorChange)
+                spinner.onItemSelectedListener = SpinnerAdapter(colorSpinnerPosition, onColorChange)
             }
         )
     }

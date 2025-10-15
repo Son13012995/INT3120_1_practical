@@ -28,19 +28,29 @@ import com.example.juicetracker.R
 @Composable
 fun RatingInputRow(rating: Int, onRatingChange: (Int) -> Unit, modifier: Modifier = Modifier) {
     InputRow(inputLabel = stringResource(R.string.rating), modifier = modifier) {
-        AndroidView(
-            factory = { context ->
-                RatingBar(context).apply {
-                    stepSize = 1f
-
-                }
-            },
-            update = { ratingBar ->
-                ratingBar.rating = rating.toFloat()
-                ratingBar.setOnRatingBarChangeListener { _, _, _ ->
-                    onRatingChange(ratingBar.rating.toInt())
-                }
-            }
+//        AndroidView(
+//            factory = { context ->
+//                RatingBar(context).apply {
+//                    stepSize = 1f
+//
+//                }
+//            },
+//            update = { ratingBar ->
+//                ratingBar.rating = rating.toFloat()
+//                ratingBar.setOnRatingBarChangeListener { _, _, _ ->
+//                    onRatingChange(ratingBar.rating.toInt())
+//                }
+//            }
+//        )
+        Slider(
+            value = rating.toFloat(),
+            onValueChange = { onRatingChange(it.toInt()) },
+            steps = 4, // 1 đến 5 sao (5 giá trị, 4 bước)
+            valueRange = 1f..5f
         )
+        // Thêm Text để hiển thị giá trị hiện tại
+        Text(text = rating.toString())
+
+
     }
 }

@@ -1,11 +1,10 @@
 package com.example.racetracker.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.random.Random // Thêm import cho Random
 
 class RaceParticipant(
     val name: String,
@@ -25,10 +24,19 @@ class RaceParticipant(
         private set
 
     suspend fun run(onWin: (Boolean) -> Unit) {
+        // sử dụng một giá trị ngẫu nhiên từ 1 đến progressIncrement.
+        val randomIncrementGenerator = Random(System.currentTimeMillis() + name.hashCode()) // Dùng seed khác nhau
+
         while (currentProgress < maxProgress) {
             delay(progressDelayMillis)
-            currentProgress += progressIncrement
-            if (currentProgress == maxProgress) {
+
+            // Tăng tiến độ ngẫu nhiên
+            val actualIncrement = randomIncrementGenerator.nextInt(1, progressIncrement + 1)
+            currentProgress += actualIncrement
+
+            // Đảm bảo không vượt quá maxProgress
+            if (currentProgress >= maxProgress) {
+                currentProgress = maxProgress
                 isWinner = true
                 onWin(true)
                 break

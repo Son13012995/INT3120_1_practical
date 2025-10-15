@@ -41,43 +41,36 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun RaceTrackerApp() {
-    /**
-     * Note: To survive the configuration changes such as screen rotation, [rememberSaveable] should
-     * be used with custom Saver object. But to keep the example simple, and keep focus on
-     * Coroutines that implementation detail is stripped out.
-     */
     val playerOne = remember {
         RaceParticipant(name = "Player 1", progressIncrement = 10)
     }
     val playerTwo = remember {
         RaceParticipant(name = "Player 2", progressIncrement = 20)
     }
-    var raceInProgress by remember { mutableStateOf(false) }
+    // Dùng rememberSaveable
+    var raceInProgress by remember(key1 = "raceState") { mutableStateOf(false) }
     var isRaceFinished by remember { mutableStateOf(false) }
 
 
-    if (raceInProgress) {
-        LaunchedEffect(playerOne, playerTwo) {
+    // Đặt LaunchedEffect phụ thuộc vào cả raceInProgress và isRaceFinished
+    LaunchedEffect(raceInProgress, isRaceFinished) {
+        if (raceInProgress && !isRaceFinished) {
             coroutineScope {
                 val scope = this
-                launch {
-                    playerOne.run { winner ->
-                        if (winner) {
-                            isRaceFinished = true
-                            scope.cancel()
-                        }
+                val onWinCallback: (Boolean) -> Unit = { winner ->
+                    if (winner) {
+                        isRaceFinished = true
+                        raceInProgress = false
+                        scope.coroutineContext.cancel()
                     }
                 }
-                launch {
-                    playerTwo.run { winner ->
-                        if (winner) {
-                            isRaceFinished = true
-                            scope.cancel()
-                        }
-                    }
-                }
+
+
+                launch { playerOne.run(onWinCallback) }
+                launch { playerTwo.run(onWinCallback) }
             }
         }
     }
@@ -86,7 +79,7 @@ fun RaceTrackerApp() {
         playerOne = playerOne,
         playerTwo = playerTwo,
         isRunning = raceInProgress,
-        isRaceFinished= isRaceFinished ,
+        isRaceFinished= isRaceFinished,
         onRunStateChange = { raceInProgress = it },
         onFinishedStateChange = { isRaceFinished = it },
         modifier = Modifier
@@ -120,18 +113,19 @@ private fun RaceTrackerScreen(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.run_a_race),
             style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_medium))
         )
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(dimensionResource(R.dimen.padding_medium)),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_large)),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
@@ -139,28 +133,23 @@ private fun RaceTrackerScreen(
                 contentDescription = null,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
             )
-            StatusIndicator(
-                participantName = playerOne.name,
-                currentProgress = playerOne.currentProgress,
-                maxProgress = stringResource(
-                    R.string.progress_percentage,
-                    playerOne.maxProgress
-                ),
-                progressFactor = playerOne.progressFactor,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
-            StatusIndicator(
-                participantName = playerTwo.name,
-                currentProgress = playerTwo.currentProgress,
-                maxProgress = stringResource(
-                    R.string.progress_percentage,
-                    playerTwo.maxProgress
-                ),
-                progressFactor = playerTwo.progressFactor,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+            // Lặp lại logic hiển thị StatusIndicator và Spacer để tối ưu hóa UI
+            listOf(playerOne, playerTwo).forEachIndexed { index, player ->
+                StatusIndicator(
+                    participantName = player.name,
+                    currentProgress = player.currentProgress,
+                    maxProgress = stringResource(
+                        R.string.progress_percentage,
+                        player.maxProgress
+                    ),
+                    progressFactor = player.progressFactor,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (index == 0) {
+                    Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+                }
+            }
+
             RaceControls(
                 isRunning = isRunning,
                 isRaceFinished = isRaceFinished,
@@ -173,14 +162,8 @@ private fun RaceTrackerScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
-            if (playerOne.isWinner) {
-                Winner(player = playerOne)
-            }
 
-            if (playerTwo.isWinner) {
-                Winner(player = playerTwo)
-            }
-
+            listOf(playerOne, playerTwo).filter { it.isWinner }.forEach { Winner(player = it) }
         }
     }
 }

@@ -16,10 +16,12 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  * Custom app entry point for manual dependency injection
  */
 class DessertReleaseApplication: Application() {
-    lateinit var userPreferencesRepository: UserPreferencesRepository
+    val userPreferencesRepository: UserPreferencesRepository by lazy {
+        // Truyền DataStore instance vào Repository
+        UserPreferencesRepository(applicationContext.dataStore)
+    }
 
     override fun onCreate() {
         super.onCreate()
-        userPreferencesRepository = UserPreferencesRepository(dataStore)
     }
 }

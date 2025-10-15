@@ -20,15 +20,17 @@ class UserPreferencesRepository(
     private companion object {
         val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
         const val TAG = "UserPreferencesRepo"
+        const val DEFAULT_LAYOUT_PREFERENCE = true
     }
 
     val isLinearLayout: Flow<Boolean> = dataStore.data
-        .catch {
-            if (it is IOException) {
-                Log.e(TAG, "Error reading preferences.", it)
+        .catch { error ->
+            if (error is IOException) {
+                Log.e(TAG, "Error reading preferences, returning default.", error)
+
                 emit(emptyPreferences())
             } else {
-                throw it
+                throw error
             }
         }
         .map { preferences ->

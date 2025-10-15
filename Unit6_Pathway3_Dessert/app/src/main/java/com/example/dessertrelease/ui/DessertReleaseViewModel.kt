@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.dessertrelease.DessertReleaseApplication
 import com.example.dessertrelease.R
 import com.example.dessertrelease.data.UserPreferencesRepository
+import com.example.dessertrelease.data.local.AppDependencyProvider
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first

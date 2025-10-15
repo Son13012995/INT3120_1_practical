@@ -15,6 +15,8 @@
  */
 package com.example.dessertrelease.data.local
 
+import com.example.dessertrelease.data.UserPreferencesRepository
+
 /*
  * Set data for Android Release dessert name
  * the list contain distinct sequential dessert name
@@ -40,4 +42,8 @@ object LocalDessertReleaseData {
         "Snow Cone",
         "Tiramisu"
     )
+}
+
+interface AppDependencyProvider {
+    val userPreferencesRepository: UserPreferencesRepository
 }

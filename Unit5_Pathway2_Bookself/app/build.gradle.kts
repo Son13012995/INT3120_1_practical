@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -51,8 +52,14 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
-    // Gson Converter
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // kotlinx-serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Kotlinx Serialization Converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")

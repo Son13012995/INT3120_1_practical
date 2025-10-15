@@ -55,18 +55,18 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
             )
         }
     ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            val bookshelfViewModel: BookshelfViewModel =
-                viewModel(factory = BookshelfViewModel.Factory)
+        val bookshelfViewModel: BookshelfViewModel =
+            viewModel(factory = BookshelfViewModel.Factory)
 
-            HomeScreen(
-                bookshelfUiState = bookshelfViewModel.bookshelfUiState,
-                retryAction = { bookshelfViewModel.getBooksPhotos("jazz+history") }
-            )
-        }
+        HomeScreen(
+            bookshelfUiState = bookshelfViewModel.bookshelfUiState,
+            retryAction = { bookshelfViewModel.getBooksPhotos("jazz+history") },
+            // Áp dụng padding và thêm padding horizontal cố định
+            modifier = Modifier
+                .padding(innerPadding)
+
+        )
     }
-}
+        }
+
+

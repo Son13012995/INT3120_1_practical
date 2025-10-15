@@ -1,13 +1,14 @@
 package com.example.bookself
 
-import AppContainer
-import DefaultAppContainer
+import com.example.bookself.data.AppContainer
 import android.app.Application
+import com.example.bookself.data.DefaultAppContainer
 
 class BookshelfApplication : Application() {
-    lateinit var container: AppContainer
+    val container: AppContainer by lazy {
+        DefaultAppContainer()
+    }
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer()
     }
 }
